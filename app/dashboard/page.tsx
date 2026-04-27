@@ -18,7 +18,12 @@ export default async function DashboardPage({
 }: {
   searchParams?: Promise<{ city?: string; lat?: string; lon?: string }>;
 }) {
-  const session = await getServerSession(authOptions);
+  let session = null;
+  try {
+    session = await getServerSession(authOptions);
+  } catch {
+    session = null;
+  }
   if (!session?.user?.id) {
     redirect("/auth/login");
   }

@@ -8,7 +8,12 @@ import { formatTemperature } from "@/lib/utils";
 import { CloudSun, MapPin, ShieldCheck, Sparkles, Zap, Database, Layers3 } from "lucide-react";
 
 export default async function HomePage() {
-  const session = await getServerSession(authOptions);
+  let session = null;
+  try {
+    session = await getServerSession(authOptions);
+  } catch {
+    session = null;
+  }
   if (session?.user?.id) {
     redirect("/dashboard");
   }

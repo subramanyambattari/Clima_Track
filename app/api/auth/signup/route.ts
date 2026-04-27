@@ -35,6 +35,7 @@ export async function POST(request: Request) {
       }
     );
   } catch (error) {
+    console.error("Signup request failed:", error);
     const message = error instanceof Error ? error.message : "Unable to create account.";
     return NextResponse.json({ error: message }, { status: 400 });
   }
