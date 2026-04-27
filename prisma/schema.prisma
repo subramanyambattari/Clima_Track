@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum StylePreference {
+  CASUAL
+  FORMAL
+  SPORTY
+}
+
+enum WeatherMood {
+  HOT
+  WARM
+  MILD
+  COOL
+  COLD
+  RAIN
+  SNOW
+  WINDY
+  HUMID
+}
+
+model User {
+  id            String          @id @default(cuid())
+  name          String
+  email         String          @unique
+  passwordHash  String?
+  image         String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  preferences   Preferences?
+  savedOutfits  SavedOutfit[]
+  searchHistory SearchHistory[]
+}
+
+model Preferences {
+  id              String           @id @default(cuid())
+  userId          String           @unique
+  stylePreference StylePreference   @default(CASUAL)
+  homeCity        String?
+  units           String            @default("metric")
+  weatherAlerts   Boolean           @default(false)
+  favoriteWeather String[]          @default([])
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SavedOutfit {
+  id              String           @id @default(cuid())
+  userId          String
+  title           String
+  summary         String
+  weatherMood     WeatherMood
+  stylePreference StylePreference
+  unit            String           @default("metric")
+  temperature     Float
+  condition       String
+  items           Json
+  accessories     Json
+  createdAt       DateTime         @default(now())
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SearchHistory {
+  id          String   @id @default(cuid())
+  userId      String
+  city        String
+  country     String?
+  unit        String   @default("metric")
+  temperature Float
+  condition   String
+  outfitTitle String
+  queryType   String   @default("city")
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
